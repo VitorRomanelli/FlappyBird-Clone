@@ -39,3 +39,41 @@ function coupleOfBarriers(height, opening, x) {
     this.sortOpening();
     this.setX(x);
 }
+
+function barriers(height, width, opening, space, notifyPoint) {
+    this.couples = [
+        new coupleOfBarriers(height, opening, width),
+        new coupleOfBarriers(height, opening, width + space),
+        new coupleOfBarriers(height, opening, width + space * 2),
+        new coupleOfBarriers(height, opening, width + space * 3)
+    ]
+
+    const offset = 3;
+
+    this.animate = () => {
+        this.couples.forEach(couple => {
+            couple.setX(couple.getX() - offset);
+
+            if(couple.getX() < -couple.getWidth()) {
+                couple.setX(couple.getX() + space * this.couples.length);
+                couple.sortOpening();
+            }
+
+            const middle = width / 2;
+
+            const crossMid = couple.getX() + offset >= middle && couple.getX() < middle;
+
+            if(crossMid) {
+                notifyPoint();
+            }
+        });
+    }
+}
+
+const b = new barriers(700, 1200, 200, 400);
+const gameArea = document.querySelector("[wm-flappy]");
+b.couples.forEach(couple => gameArea.appendChild(couple.element));
+
+setInterval(() => {
+    b.animate();
+}, 20);
