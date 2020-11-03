@@ -70,10 +70,32 @@ function barriers(height, width, opening, space, notifyPoint) {
     }
 }
 
-const b = new barriers(700, 1200, 200, 400);
-const gameArea = document.querySelector("[wm-flappy]");
-b.couples.forEach(couple => gameArea.appendChild(couple.element));
+function Bird(gameHeight) {
+    let flying = false;
 
-setInterval(() => {
-    b.animate();
-}, 20);
+    this.element = newElement("img", "bird");
+    this.element.src = "../../images/bird.png";
+
+    this.getY = () => parseInt(this.element.style.bottom.split("px")[0]);
+    this.setY = y => this.element.style.bottom = `${y}px`;
+
+    window.onkeydown = e => flying = true;
+    window.onkeyup = e => flying = false;
+
+    this.animate = () => {
+        const newY = this.getY() + (flying ? 8 : -5);
+        const maxHeight = gameHeight - this.element.clientHeight;
+
+        if(newY <= 0) {
+            this.setY(0);
+        } else if (newY >= maxHeight) {
+            this.setY(maxHeight);
+        } else {
+            this.setY(newY);
+        }
+
+    }
+    
+    this.setY(gameHeight / 2);
+}
+
