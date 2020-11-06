@@ -144,7 +144,6 @@ function flappyBird() {
 
     gameArea.appendChild(progress.element);
     gameArea.appendChild(bird.element);
-    gameArea.appendChild(progress.element);
     barriers.couples.forEach(couple => gameArea.appendChild(couple.element));
 
     this.start = () => {
@@ -154,9 +153,40 @@ function flappyBird() {
 
             if(collided(bird, barriers)){
                 clearInterval(timer);
+                endGame();
             }
         }, 20);
     };
 }
 
-new flappyBird().start();
+function startGame() {
+    document.querySelector("[wm-flappy]").removeChild(startButton);
+    new flappyBird().start();
+}
+
+function endGame() {
+    const gameArea = document.querySelector("[wm-flappy]");
+
+    const scoreSpan = newElement("span", "scoreSpan");
+    scoreSpan.innerHTML = "SCORE";
+
+    const endScore = document.querySelector(".progress");
+    endScore.classList.remove("progress");
+    endScore.classList.add("endScore");
+    
+    const restartButton = newElement("button", "startButton");
+    restartButton.innerHTML = "RESTART";
+
+    gameArea.appendChild(scoreSpan);
+    gameArea.appendChild(endScore);
+    gameArea.appendChild(restartButton);
+
+    restartButton.onclick = () => {
+        document.querySelector("[wm-flappy]").innerHTML = "";
+        new flappyBird().start();    
+    };
+}
+
+const startButton = document.querySelector("button");
+
+startButton.onclick = startGame;
