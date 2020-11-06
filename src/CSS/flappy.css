@@ -10,10 +10,10 @@
 [wm-flappy] {
     position: relative;
     border: 5px solid dodgerblue;
-    height: 700px;
-    width: 1200px;
+    height: 750px;
+    width: 1450px;
     margin: 15px;
-    background-color: deepskyblue;
+    background-image: url(../../images/flappy.png);
     overflow: hidden;
 }
 

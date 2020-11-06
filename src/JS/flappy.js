@@ -16,7 +16,7 @@ function createBarrier(reverse = false) {
     this.setHeight = height => body.style.height = `${height}px`;
 }
 
-function coupleOfBarriers(height, opening, x) {
+function CoupleOfBarriers(height, opening, x) {
     this.element = newElement('div', 'coupleOfBarriers');
 
     this.top = new createBarrier(true);
@@ -42,10 +42,10 @@ function coupleOfBarriers(height, opening, x) {
 
 function Barriers(height, width, opening, space, notifyPoint) {
     this.couples = [
-        new coupleOfBarriers(height, opening, width),
-        new coupleOfBarriers(height, opening, width + space),
-        new coupleOfBarriers(height, opening, width + space * 2),
-        new coupleOfBarriers(height, opening, width + space * 3)
+        new CoupleOfBarriers(height, opening, width),
+        new CoupleOfBarriers(height, opening, width + space),
+        new CoupleOfBarriers(height, opening, width + space * 2),
+        new CoupleOfBarriers(height, opening, width + space * 3)
     ]
 
     const offset = 3;
@@ -107,6 +107,30 @@ function Progress() {
     this.updatePoints(0);
 }
 
+function isOverlap(elementA, elementB) {
+    const a = elementA.getBoundingClientRect();
+    const b = elementB.getBoundingClientRect();
+
+    const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left;
+    const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
+
+    return horizontal && vertical;
+}
+
+function collided(bird, barriers) {
+    let collided = false;
+
+    barriers.couples.forEach(coupleOfBarriers => {
+        if(!collided) {
+            const top = coupleOfBarriers.top.element;
+            const bottom = coupleOfBarriers.bottom.element;
+
+            collided = isOverlap(bird.element, top) || isOverlap(bird.element, bottom);
+        }
+    });
+    return collided;
+}
+
 function flappyBird() {
     let points = 0;
 
@@ -115,7 +139,7 @@ function flappyBird() {
     const width = gameArea.clientWidth;
 
     const progress = new Progress();
-    const barriers = new Barriers(height, width, 200, 400, () => progress.updatePoints(++points));
+    const barriers = new Barriers(height, width, 190, 400, () => progress.updatePoints(++points));
     const bird = new Bird(height);
 
     gameArea.appendChild(progress.element);
@@ -127,6 +151,10 @@ function flappyBird() {
         const timer = setInterval(() => {
             barriers.animate();
             bird.animate();
+
+            if(collided(bird, barriers)){
+                clearInterval(timer);
+            }
         }, 20);
     };
 }
